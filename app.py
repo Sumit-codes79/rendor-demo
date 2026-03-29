@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 import pickle
 import pandas as pd
+import os
 
 app = Flask(__name__)
 
@@ -8,9 +9,11 @@ app = Flask(__name__)
 with open('pipe.pkl', 'rb') as file:
     model = pickle.load(file)
 
+
 @app.route('/')
 def home():
     return render_template('index.html')
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -28,7 +31,7 @@ def predict():
             'arrival_mode': request.form['arrival_mode']
         }
 
-        # Convert to DataFrame (important for the pipeline)
+        # Convert to DataFrame (required for the pipeline)
         input_df = pd.DataFrame([data])
 
         # Make prediction
@@ -54,5 +57,7 @@ def predict():
         return render_template('index.html', error=str(e))
 
 
+# Production start command
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
