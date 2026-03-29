@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ER Triage Prediction System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🏥 Emergency Room Triage Prediction</h1>
+
+    <form method="POST" action="/predict">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Age (years)</label>
+          <input type="number" name="age" step="0.1" min="0" max="120" required>
+        </div>
+
+        <div class="form-group">
+          <label>Heart Rate (bpm)</label>
+          <input type="number" name="heart_rate" step="0.1" min="30" max="200" required>
+        </div>
+
+        <div class="form-group">
+          <label>Systolic Blood Pressure (mmHg)</label>
+          <input type="number" name="systolic_blood_pressure" step="0.1" min="60" max="250" required>
+        </div>
+
+        <div class="form-group">
+          <label>Oxygen Saturation (%)</label>
+          <input type="number" name="oxygen_saturation" step="0.1" min="70" max="100" required>
+        </div>
+
+        <div class="form-group">
+          <label>Body Temperature (°C)</label>
+          <input type="number" name="body_temperature" step="0.01" min="34" max="42" required>
+        </div>
+
+        <div class="form-group">
+          <label>Pain Level (1-10)</label>
+          <input type="number" name="pain_level" min="1" max="10" required>
+        </div>
+
+        <div class="form-group">
+          <label>Chronic Disease Count</label>
+          <input type="number" name="chronic_disease_count" min="0" max="15" required>
+        </div>
+
+        <div class="form-group">
+          <label>Previous ER Visits</label>
+          <input type="number" name="previous_er_visits" min="0" max="20" required>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Arrival Mode</label>
+          <select name="arrival_mode" required>
+            <option value="">Select Arrival Mode</option>
+            <option value="walk_in">Walk-in</option>
+            <option value="ambulance">Ambulance</option>
+            <option value="wheelchair">Wheelchair</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Predict Triage Level</button>
+    </form>
+
+    {% if prediction_text %}
+    <div class="result">
+      <h2>Prediction Result</h2>
+      <div class="prediction-box {{ 'emergent' if 'Level 3' in prediction_text else 'urgent' if 'Level 2' in prediction_text else 'less-urgent' }}">
+        <h3>{{ prediction_text }}</h3>
+        <p><strong>Confidence:</strong> {{ probability }}%</p>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="error">
+      <p>Error: {{ error }}</p>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
